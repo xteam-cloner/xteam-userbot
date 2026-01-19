@@ -232,40 +232,85 @@ async def vc_play(event):
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
     
-    if (replied and not replied.audio and not replied.voice and not title or not replied and not title):
-        return await edit_delete(event, "**Please enter song title!**")
-        
-    status_msg = await edit_or_reply(event, "🔍")
-    query = title if title else replied.message
-    search = ytsearch(query)
-    if search == 0:
-        return await status_msg.edit("**Song not found.**")
-        
-    songname, url, duration, thumbnail, videoid, artist = search
-    stream_link_info = await ytdl(url, video_mode=False) 
-    hm, ytlink = stream_link_info if isinstance(stream_link_info, tuple) else (1, stream_link_info)
+    status_msg = await edit_or_reply(event, "⏳ **Processing...**")
     
-    if hm == 0:
-        return await status_msg.edit(f"**Error:** `{ytlink}`")
+    if replied and (replied.audio or replied.voice or replied.video or replied.document):
+        if replied.file.size > 100 * 1024 * 1024:
+            return await status_msg.edit("**File too large!** Maximum limit is 100MB.")
+            
+        await status_msg.edit("📥 **Downloading media...**")
+        path = await replied.download_media()
+        
+        _title = getattr(replied.file, 'title', "Telegram Music") or "Telegram Music"
+        _artist = getattr(replied.file, 'performer', "Unknown Artist") or "Unknown Artist"
+        
+        songname = f"{_artist} - {_title}"
+        artist = _artist
+        duration = getattr(replied.file, 'duration', 0)
+        ytlink = path 
+        url = "https://t.me/c/telegram"
+        thumbnail = None
+        videoid = "local_file"
+
+    elif title or (replied and replied.message):
+        query = title if title else replied.message
+        await status_msg.edit(f"🔍 **Searching:** `{query}`...")
+        
+        search = ytsearch(query)
+        if search == 0:
+            return await status_msg.edit("**Song not found.**")
+            
+        _songname, url, duration, thumbnail, videoid, _artist = search
+        
+        songname = f"{_artist} - {_songname}"
+        artist = _artist
+        
+        stream_link_info = await ytdl(url, video_mode=False) 
+        hm, ytlink = stream_link_info if isinstance(stream_link_info, tuple) else (1, stream_link_info)
+        
+        if hm == 0:
+            return await status_msg.edit(f"**Error:** `{ytlink}`")
+            
+    else:
+        return await status_msg.edit("**Please provide a song title or reply to an audio file!**")
 
     if chat_id in QUEUE and len(QUEUE[chat_id]) > 0:
         add_to_queue(chat_id, songname, url, duration, thumbnail, videoid, artist, from_user, False)
-        final_caption = f"<blockquote><b>🎧 Added to Queue</b>\n\n<b>Song:</b> {songname}\n<b>Artist:</b> {artist}\n<b>Requester:</b> {from_user}</blockquote>"
+        final_caption = (
+            f"<blockquote><b>🎧 Added to Queue</b>\n\n"
+            f"<b>Title:</b> {songname}\n"
+            f"<b>Requester:</b> {from_user}</blockquote>"
+        )
         await status_msg.delete()
         return await event.client.send_message(chat_id, final_caption, buttons=MUSIC_BUTTONS, parse_mode='html')
+    
     else:
         try:
             add_to_queue(chat_id, songname, url, duration, thumbnail, videoid, artist, from_user, False)
             await join_call(chat_id, link=ytlink, video=False)
             await status_msg.delete()
             
-            caption_text = f"<blockquote><b>🎵 Now Playing</b>\n\n<b>Song:</b> {songname}\n<b>Artist:</b> {artist}\n<b>Duration:</b> {duration}\n<b>Requester:</b> {from_user}</blockquote>"
-            pesan_audio = await event.client.send_message(chat_id, caption_text, buttons=telegram_markup_timer("00:00", duration), parse_mode='html')
+            caption_text = (
+                f"<blockquote><b>🎵 Now Playing</b>\n\n"
+                f"<b>Title:</b> {songname}\n"
+                f"<b>Duration:</b> {duration}\n"
+                f"<b>Requester:</b> {from_user}</blockquote>"
+            )
+            
+            pesan_audio = await event.client.send_message(
+                chat_id, 
+                caption_text, 
+                buttons=telegram_markup_timer("00:00", duration), 
+                parse_mode='html'
+            )
             
             active_messages[chat_id] = pesan_audio.id
             asyncio.create_task(timer_task(event.client, chat_id, pesan_audio.id, duration))
+            
         except Exception as e:
             clear_queue(chat_id)
+            if os.path.exists(ytlink) and not ytlink.startswith("http"):
+                os.remove(ytlink)
             await status_msg.edit(f"**ERROR:** `{e}`")
 
 
