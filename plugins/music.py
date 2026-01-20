@@ -92,7 +92,8 @@ from xteam.vcbot import (
     get_play_text,
     get_play_queue,
 MUSIC_BUTTONS,
-    join_call
+    join_call,
+AssistantAdd
 )
 from xteam.vcbot.queues import QUEUE, add_to_queue, clear_queue, get_queue, pop_an_item
 
@@ -136,6 +137,7 @@ async def skip_current_song(chat_id):
         
         
 @man_cmd(pattern="Play(?:\s|$)([\s\S]*)", group_only=True)
+@AssistantAdd
 async def vc_play(event):
     title = event.pattern_match.group(1)
     replied = await event.get_reply_message()
@@ -181,6 +183,7 @@ async def vc_play(event):
 
 
 @man_cmd(pattern="Vplay(?:\s|$)([\s\S]*)", group_only=True)
+@AssistantAdd
 async def vc_vplay(event):
     title = event.pattern_match.group(1)
     replied = await event.get_reply_message()
@@ -226,6 +229,7 @@ async def vc_vplay(event):
 
 
 @man_cmd(pattern="play(?:\s|$)([\s\S]*)", group_only=True)
+@AssistantAdd
 async def vc_play(event):
     title = event.pattern_match.group(1)
     replied = await event.get_reply_message()
@@ -315,6 +319,7 @@ async def vc_play(event):
 
 
 @man_cmd(pattern="vplay(?:\s|$)([\s\S]*)", group_only=True)
+@AssistantAdd
 async def vc_vplay(event):
     title = event.pattern_match.group(1)
     replied = await event.get_reply_message()
