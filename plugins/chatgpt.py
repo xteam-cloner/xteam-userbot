@@ -37,14 +37,15 @@ from . import *
 ENDPOINTS = {
     "gpt": "https://api.openai.com/v1/chat/completions",
     "antr": "https://api.anthropic.com/v1/messages",
-    "gemini": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+    # Gunakan v1beta dan pastikan model name sesuai dengan output LIST tadi
+    "gemini": "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent",
     "deepseek": "https://api.deepseek.com/v3/chat/completions"
 }
 
 DEFAULT_MODELS = {
     "gpt": "gpt-3.5-turbo",
     "antr": "claude-3-haiku",
-    "gemini": "gemini-1.5-flash",
+    "gemini": "gemini-3-flash-preview", # Ubah ke nama yang ada di daftar tadi
     "deepseek": "DeepSeek-V3"
 }
 
@@ -163,13 +164,11 @@ async def get_ai_response(provider, prompt, api_key, stream=False):
                                         yield content
                             except Exception:
                                 continue
-
+            
         elif provider == "gemini":
             params = {"key": api_key}
             data = {
-                "contents": [{
-                    "parts": [{"text": prompt}]
-                }]
+                "contents": [{"parts": [{"text": prompt}]}]
             }
             response = await async_searcher(
                 ENDPOINTS[provider],
@@ -179,7 +178,24 @@ async def get_ai_response(provider, prompt, api_key, stream=False):
                 json=data,
                 re_json=True
             )
-            text = response["candidates"][0]["content"]["parts"][0]["text"]
+
+            # Cek jika ada error dari Google
+            if "error" in response:
+                yield f"❌ Google API Error: {response['error'].get('message')}"
+                return
+
+            # Cek keberadaan candidates secara aman
+            candidates = response.get("candidates")
+            if not candidates or len(candidates) == 0:
+                yield "⚠️ Google tidak memberikan jawaban (Mungkin terfilter/Safety)."
+                return
+
+            try:
+                text = candidates[0]["content"]["parts"][0]["text"]
+            except (KeyError, IndexError):
+                yield "❌ Gagal memproses format respons Gemini."
+                return
+
             if not stream:
                 yield text
                 return
