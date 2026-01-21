@@ -237,6 +237,7 @@ async def vc_play(event):
     from_user = vcmention(event.sender)
     
     status_msg = await edit_or_reply(event, "⏳ **Processing...**")
+    ytlink = None
     
     if replied and (replied.audio or replied.voice or replied.video or replied.document):
         if replied.file.size > 100 * 1024 * 1024:
@@ -265,12 +266,10 @@ async def vc_play(event):
             return await status_msg.edit("**Song not found.**")
             
         _songname, url, duration, thumbnail, videoid, _artist = search
-        
         songname = f"{_artist} - {_songname}"
         artist = _artist
         
-        stream_link_info = await ytdl(url, video_mode=False) 
-        hm, ytlink = stream_link_info if isinstance(stream_link_info, tuple) else (1, stream_link_info)
+        hm, ytlink = await ytdl(url, video_mode=False)
         
         if hm == 0:
             return await status_msg.edit(f"**Error:** `{ytlink}`")
@@ -311,9 +310,12 @@ async def vc_play(event):
             active_messages[chat_id] = pesan_audio.id
             asyncio.create_task(timer_task(event.client, chat_id, pesan_audio.id, duration))
             
+            if ytlink and not ytlink.startswith("http"):
+                asyncio.create_task(cleanup_file(ytlink, delay=300))
+
         except Exception as e:
             clear_queue(chat_id)
-            if os.path.exists(ytlink) and not ytlink.startswith("http"):
+            if ytlink and os.path.exists(ytlink) and not ytlink.startswith("http"):
                 os.remove(ytlink)
             await status_msg.edit(f"**ERROR:** `{e}`")
 
@@ -336,14 +338,13 @@ async def vc_vplay(event):
         return await status_msg.edit("**Video not found!**")
         
     songname, url, duration, thumbnail, videoid, artist = search
-    stream_link_info = await ytdl(url, video_mode=True) 
-    hm, ytlink = stream_link_info if isinstance(stream_link_info, tuple) else (1, stream_link_info)
+    hm, ytlink = await ytdl(url, video_mode=True)
     
     if hm == 0:
         return await status_msg.edit(f"**Error:** `{ytlink}`")
 
     if chat_id in QUEUE and len(QUEUE[chat_id]) > 0:
-        pos = add_to_queue(chat_id, songname, url, duration, thumbnail, videoid, artist, from_user, True)
+        add_to_queue(chat_id, songname, url, duration, thumbnail, videoid, artist, from_user, True)
         caption = f"<blockquote><b>📽 Video Added to Queue</b>\n\n<b>Title:</b> {songname}\n<b>Artist:</b> {artist}\n<b>Requester:</b> {from_user}</blockquote>"
         await status_msg.delete()
         return await event.client.send_message(chat_id, caption, buttons=MUSIC_BUTTONS, parse_mode='html')
@@ -358,10 +359,16 @@ async def vc_vplay(event):
             
             active_messages[chat_id] = pesan_video.id
             asyncio.create_task(timer_task(event.client, chat_id, pesan_video.id, duration))
+            
+            if ytlink and not ytlink.startswith("http"):
+                asyncio.create_task(cleanup_file(ytlink, delay=600))
+                
         except Exception as e:
             clear_queue(chat_id)
+            if ytlink and os.path.exists(ytlink) and not ytlink.startswith("http"):
+                os.remove(ytlink)
             await status_msg.edit(f"**ERROR:** `{e}`")
-   
+           
             
 @man_cmd(pattern="end$", group_only=True)
 async def vc_end(event):
