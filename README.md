@@ -81,7 +81,7 @@ xteam is licensed under [GNU Affero General Public License](https://www.gnu.org/
 # Credits
 * [![TeamUltroid-Devs](https://img.shields.io/static/v1?label=Teamultroid&message=devs&color=critical)](https://t.me/UltroidDevs)
 * [![TeamX-Mods](https://img.shields.io/static/v1?label=TeamX&message=Mods&color=critical)](https://t.me/xteam_cloner)
-* [![PyTgCalls](https://img.shields.io/static/v1?label=PyTgCalls&message=2.2.8&color=critical)](https://github.com/pytgcalls/pytgcalls)
+* [![PyTgCalls](https://img.shields.io/static/v1?label=PyTgCalls&message=2.2.10&color=critical)](https://github.com/pytgcalls/pytgcalls)
 * [![Lonami-Telethon](https://img.shields.io/static/v1?label=Telethon&message=devs&color=critical)](https://github.com/LonamiWebs/Telethon)
 </h3>
 <p align="center"><img src="https://i0.wp.com/images.hive.blog/DQmZgGvu6YXrMNyDb4wVURLV14WNNSYs58R1kY64HNMSmCL/hive-didver1.gif"></p>
