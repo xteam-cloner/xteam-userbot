@@ -44,7 +44,7 @@ ENDPOINTS = {
 DEFAULT_MODELS = {
     "gpt": "gpt-3.5-turbo",
     "antr": "claude-3-haiku",
-    "gemini": "gemini-3-pro-preview",
+    "gemini": "gemini-1.5-flash",
     "deepseek": "DeepSeek-V3"
 }
 
