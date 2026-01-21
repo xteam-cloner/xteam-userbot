@@ -297,17 +297,16 @@ async def _(event):
             rayso = True
     except IndexError:
         return await event.eor(get_string("devs_1"), time=10)
+
     xx = await event.eor(get_string("com_1"))
     reply_to_id = event.reply_to_msg_id or event.id
     stdout, stderr = await bash(cmd, run_code=1)
     
-    # OUTPUT INPUT (Markup HTML)
-    OUT = f"<b> INPUT:</b>\n<blockquote>{cmd}</blockquote>\n"
-    
+    # Inisialisasi variabel kosong (Input dihapus)
+    OUT = ""
     err, out = "", ""
+
     if stderr:
-        # ERROR (Markup HTML)
-        # Baris ini menghasilkan konten ERROR, tapi tidak ditambahkan ke OUT
         err = f"<b> ERROR:</b>\n<blockquote>{stderr}</blockquote>\n"
         
     if stdout:
@@ -317,7 +316,6 @@ async def _(event):
             or event.chat.creator
             or event.chat.default_banned_rights.embed_links
         ):
-            # ... (Logika Carbon/Rayso tetap sama)
             li = await Carbon(
                 code=stdout,
                 file_name="bash",
@@ -326,11 +324,11 @@ async def _(event):
             )
             if isinstance(li, dict):
                 await xx.edit(
-                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout<code>:{stdout}</code>\nstderr: <code>{stderr}</code>"
+                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>\nstderr: <code>{stderr}</code>"
                 )
                 return
             url = f"https://graph.org{uf(li)[-1]}"
-            OUT = f"[\xad]({url}){OUT}"
+            OUT = f"[\xad]({url})" 
             out = "<b> OUTPUT:</b>"
             remove(li)
         elif (rayso or udB.get_key("RAYSO_ON_BASH")) and (
@@ -348,11 +346,11 @@ async def _(event):
             )
             if isinstance(li, dict):
                 await xx.edit(
-                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout<code>:{stdout}</code>\nstderr: <code>{stderr}</code>"
+                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>\nstderr: <code>{stderr}</code>"
                 )
                 return
             url = f"https://graph.org{uf(li)[-1]}"
-            OUT = f"[\xad]({url}){OUT}"
+            OUT = f"[\xad]({url})"
             out = "<b> OUTPUT:</b>"
             remove(li)
         else:
@@ -362,43 +360,34 @@ async def _(event):
                     stdout = ""
                     for data in list(load.keys()):
                         res = load[data] or ""
-                        # Menggunakan <code> untuk code/data
                         if res and "http" not in str(res):
                             res = f"<code>{res}</code>"
                         stdout += f"<b>{data}</b> :  {res}\n" 
                     yamlf = True
-                except Exception as er:
+                except Exception:
                     stdout = f"<code>{stdout}</code>"
-                    LOGS.exception(er)
             else:
-                stdout = stdout 
+                stdout = f"<code>{stdout}</code>" 
             
-            # Membungkus output dengan blockquote
             out = f"<b> OUTPUT:</b>\n<blockquote>{stdout}</blockquote>"
             
     if not stderr and not stdout:
         out = "<b> OUTPUT:</b>\n<blockquote>Success</blockquote>"
         
-    # HAPUS/KOMENTARI BARIS INI untuk menghilangkan ERROR dari output akhir
-    # OUT += err + out
-    OUT += out # <-- Hanya menambahkan 'out'
+    # Gabungkan hanya error dan output
+    FINAL_TEXT = err + OUT + out
     
-    if len(OUT) > 4096:
-        ultd = err + out
-        with BytesIO(str.encode(ultd)) as out_file:
+    if len(FINAL_TEXT) > 4096:
+        with BytesIO(str.encode(err + out)) as out_file:
             out_file.name = "bash.txt"
             await event.client.send_file(
                 event.chat_id,
                 out_file,
                 force_document=True,
-                thumb=ULTConfig.thumb,
                 allow_cache=False,
-                # Caption harus menggunakan markup HTML/Markdown yang sesuai
-                caption=f"<code>{cmd}</code>" if len(cmd) < 998 else None, 
                 reply_to=reply_to_id,
             )
-
             await xx.delete()
     else:
-        # Panggil fungsi edit (HARAP TAMBAHKAN parse_mode='html' JIKA TIDAK BERHASIL)
-        await xx.edit(OUT, parse_mode="html", link_preview=not yamlf)
+        await xx.edit(FINAL_TEXT, parse_mode="html", link_preview=not yamlf)
+    
