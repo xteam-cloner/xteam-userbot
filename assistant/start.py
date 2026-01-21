@@ -51,7 +51,7 @@ _settings = [
 
 _start = [
     [
-        Button.url("🥰 OWNER 🥰", url="https://t.me/xteam_clone"),
+        Button.url("✨ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✨", url="https://t.me/ngxassbot?startgroup=true"),
     ],
     [
         Button.inline("⚙️ Settings ⚙️", data="setter"),
