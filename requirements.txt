@@ -1,5 +1,6 @@
 # Important Requirements here.
 telethon-patch
+Telethon==1.42.0
 aiofiles==24.1.0
 aiohttp==3.13.3
 asyncio==3.4.3
@@ -53,7 +54,6 @@ flask_restful
 wget
 catbox-uploader
 cloudscraper
-git+https://github.com/LonamiWebs/Telethon.git
 git+https://github.com/New-dev0/instagrapi.git@39df1b1#egg=instagrapi
 git+https://github.com/xteam-cloner/xteam.git
 git+https://github.com/buddhhu/img2html.git@c44170d#egg=img2html
