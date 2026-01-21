@@ -93,7 +93,8 @@ from xteam.vcbot import (
     get_play_queue,
 MUSIC_BUTTONS,
     join_call,
-AssistantAdd
+AssistantAdd,
+cleanup_file
 )
 from xteam.vcbot.queues import QUEUE, add_to_queue, clear_queue, get_queue, pop_an_item
 
