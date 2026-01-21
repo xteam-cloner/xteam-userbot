@@ -37,7 +37,7 @@ from . import *
 ENDPOINTS = {
     "gpt": "https://api.openai.com/v1/chat/completions",
     "antr": "https://api.anthropic.com/v1/messages",
-    "gemini": "https://generativelanguage.googleapis.com/v1/models/gemini-3-pro-preview",
+    "gemini": "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
     "deepseek": "https://api.deepseek.com/v3/chat/completions"
 }
 
