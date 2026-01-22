@@ -238,6 +238,7 @@ async def vc_play(event):
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
     status_msg = await edit_or_reply(event, "⏳")
+    added_songs = []
 
     if title and ("youtube.com/playlist" in title or "&list=" in title):
         await status_msg.edit("📂 **Processing Playlist...**")
@@ -249,6 +250,7 @@ async def vc_play(event):
         if search_f != 0:
             _sn, _u, _du, _th, _vi, _ar = search_f
             songname_f = f"{_ar} - {_sn}"
+            added_songs.append(songname_f)
             if chat_id not in active_messages:
                 ok, ytlink = await ytdl(_u, False)
                 if ok:
@@ -263,10 +265,14 @@ async def vc_play(event):
             search = ytsearch(url)
             if search != 0:
                 _sn, _u, _du, _th, _vi, _ar = search
-                add_to_queue(chat_id, f"{_ar} - {_sn}", _u, _du, _th, _vi, _ar, from_user, False)
+                songname = f"{_ar} - {_sn}"
+                add_to_queue(chat_id, songname, _u, _du, _th, _vi, _ar, from_user, False)
+                added_songs.append(songname)
                 if index % 5 == 0 or index == len(ids):
-                    await status_msg.edit(f"📂 **Processing:** {index}/{len(ids)} songs...")
-        return await status_msg.edit(f"✅ Successfully added **{len(ids) + 1}** songs to queue.")
+                    await status_msg.edit(f"**Processing:** {index}/{len(ids)} songs...")
+        
+        list_text = "\n".join([f"{i+1}. {song}" for i, song in enumerate(added_songs)])
+        return await status_msg.edit(f"**Playlist Audio {len(added_songs)}**\n\n{list_text}")
 
     if replied and (replied.audio or replied.voice or replied.video or replied.document):
         path = await replied.download_media()
@@ -308,9 +314,10 @@ async def vc_vplay(event):
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
     status_msg = await edit_or_reply(event, "⏳")
+    added_vids = []
     
     if title and ("youtube.com/playlist" in title or "&list=" in title):
-        await status_msg.edit("📂 **Processing Video Playlist...**")
+        await status_msg.edit("**Processing Video Playlist...**")
         ids = await get_playlist_ids(title, limit=15)
         if not ids: return await status_msg.edit("**Not Found!**")
         
@@ -318,6 +325,7 @@ async def vc_vplay(event):
         search_f = ytsearch(f"https://www.youtube.com/watch?v={first_id}")
         if search_f != 0:
             _sn, _u, _du, _th, _vi, _ar = search_f
+            added_vids.append(_sn)
             if chat_id not in active_messages:
                 ok, ytlink = await ytdl(_u, True)
                 if ok:
@@ -325,7 +333,7 @@ async def vc_vplay(event):
                     await asyncio.sleep(2)
                     await join_call(chat_id, ytlink, True)
                     asyncio.create_task(cleanup_file(ytlink, 1800))
-                    await event.client.send_message(chat_id, f"🎬 **Playing Video from Playlist:**\n`{_sn}`")
+                    await event.client.send_message(chat_id, f"🎬 **Playing Video:**\n`{_sn}`")
 
         for index, v_id in enumerate(ids, start=1):
             url = f"https://www.youtube.com/watch?v={v_id}"
@@ -333,9 +341,12 @@ async def vc_vplay(event):
             if search != 0:
                 _sn, _u, _du, _th, _vi, _ar = search
                 add_to_queue(chat_id, _sn, _u, _du, _th, _vi, _ar, from_user, True)
+                added_vids.append(_sn)
                 if index % 3 == 0 or index == len(ids):
                     await status_msg.edit(f"📽 **Processing:** {index}/{len(ids)} videos...")
-        return await status_msg.edit(f"✅ Successfully added **{len(ids) + 1}** videos to queue.")
+        
+        list_text = "\n".join([f"{i+1}. {vid}" for i, vid in enumerate(added_vids)])
+        return await status_msg.edit(f"**Playlist Video {len(added_vids)}**\n\n{list_text}")
 
     query = title if title else (replied.message if replied else None)
     search = ytsearch(query)
@@ -361,7 +372,7 @@ async def vc_vplay(event):
         except Exception as e:
             if ytlink and os.path.exists(ytlink): os.remove(ytlink)
             await status_msg.edit(f"**Error:** `{e}`")
-           
+                    
             
 @man_cmd(pattern="end$", group_only=True)
 async def vc_end(event):
