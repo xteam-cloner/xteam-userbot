@@ -138,10 +138,10 @@ async def skip_current_song(chat_id):
         return 1
         
         
-@man_cmd(pattern="Play(?:\s|$)([\s\S]*)", group_only=True)
+@man_cmd(pattern="Play( (.*)|$)")
 @AssistantAdd
 async def vc_play(event):
-    title = event.pattern_match.group(1)
+    title = event.pattern_match.group(2)
     replied = await event.get_reply_message()
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
@@ -184,10 +184,10 @@ async def vc_play(event):
             await status_msg.edit(f"**ERROR:** `{e}`")
 
 
-@man_cmd(pattern="Vplay(?:\s|$)([\s\S]*)", group_only=True)
+@man_cmd(pattern="Vplay( (.*)|$)"))
 @AssistantAdd
 async def vc_vplay(event):
-    title = event.pattern_match.group(1)
+    title = event.pattern_match.group(2)
     replied = await event.get_reply_message()
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
@@ -230,10 +230,10 @@ async def vc_vplay(event):
             await status_msg.edit(f"**ERROR:** `{e}`")
 
 
-@man_cmd(pattern="play(?:\s|$)([\s\S]*)", group_only=True)
+@man_cmd(pattern="play( (.*)|$)")
 @AssistantAdd
 async def vc_play(event):
-    title = event.pattern_match.group(1)
+    title = event.pattern_match.group(2)
     replied = await event.get_reply_message()
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
@@ -306,10 +306,10 @@ async def vc_play(event):
             if ytlink and os.path.exists(ytlink): os.remove(ytlink)
             await status_msg.edit(f"**Error:** `{e}`")
 
-@man_cmd(pattern="vplay(?:\s|$)([\s\S]*)", group_only=True)
+@man_cmd(pattern="vplay( (.*)|$)")
 @AssistantAdd
 async def vc_vplay(event):
-    title = event.pattern_match.group(1)
+    title = event.pattern_match.group(2)
     replied = await event.get_reply_message()
     chat_id = event.chat_id
     from_user = vcmention(event.sender)
