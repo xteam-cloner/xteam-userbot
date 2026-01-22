@@ -258,13 +258,17 @@ async def vc_play(event):
                     asyncio.create_task(cleanup_file(ytlink, 1800))
                     await event.client.send_message(chat_id, f"🎵 **Memutar dari Playlist:**\n`{songname_f}`")
 
-        for v_id in ids:
+        for index, v_id in enumerate(ids, start=1):
             url = f"https://www.youtube.com/watch?v={v_id}"
             search = ytsearch(url)
             if search != 0:
                 _sn, _u, _du, _th, _vi, _ar = search
-                add_to_queue(chat_id, f"{_ar} - {_sn}", _u, _du, _th, _vi, _ar, from_user, False)
-        return await status_msg.edit(f"✅ Berhasil menambahkan **{len(ids)}** lagu lainnya ke antrian.")
+                songname = f"{_ar} - {_sn}"
+                add_to_queue(chat_id, songname, _u, _du, _th, _vi, _ar, from_user, False)
+               if index % 5 == 0: 
+                    await status_msg.edit(f"📂 **Memproses:** {index}/{len(ids)} lagu...")
+        
+        return await status_msg.edit(f"✅ Playlist Audio **{len(ids)}**")
 
     if replied and (replied.audio or replied.voice or replied.video or replied.document):
         path = await replied.download_media()
@@ -326,12 +330,17 @@ async def vc_vplay(event):
                     asyncio.create_task(cleanup_file(ytlink, 1800))
                     await event.client.send_message(chat_id, f"🎬 **Memutar Video:**\n`{_sn}`")
 
-        for v_id in ids:
-            search = ytsearch(f"https://www.youtube.com/watch?v={v_id}")
+        for index, v_id in enumerate(ids, start=1):
+            url = f"https://www.youtube.com/watch?v={v_id}"
+            search = ytsearch(url)
             if search != 0:
                 _sn, _u, _du, _th, _vi, _ar = search
                 add_to_queue(chat_id, _sn, _u, _du, _th, _vi, _ar, from_user, True)
-        return await status_msg.edit(f"✅ Berhasil menambahkan **{len(ids)}** video ke antrian.")
+
+                if index % 3 == 0: 
+                    await status_msg.edit(f"📽 **Memproses Video:** {index}/{len(ids)}...")
+        
+        return await status_msg.edit(f"✅ Playlist Video **{len(ids)}**")
 
     query = title if title else (replied.message if replied else None)
     search = ytsearch(query)
