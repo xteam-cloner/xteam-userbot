@@ -258,7 +258,7 @@ async def vc_play(event):
                     await asyncio.sleep(2)
                     await join_call(chat_id, ytlink, False)
                     asyncio.create_task(cleanup_file(ytlink, 1800))
-                    await event.client.send_message(chat_id, f"<blockquote>🎵 **Playing from Playlist:**\n`{songname_f}`</blockquote>")
+                    await event.client.send_message(chat_id, f"<blockquote>🎵 **Playing from Playlist:**\n`{songname_f}`</blockquote>", parse_mode='html')
 
         for index, v_id in enumerate(ids, start=1):
             url = f"https://www.youtube.com/watch?v={v_id}"
@@ -272,7 +272,7 @@ async def vc_play(event):
                     await status_msg.edit(f"**Processing:** {index}/{len(ids)} songs...")
         
         list_text = "\n".join([f"{i+1}. {song}" for i, song in enumerate(added_songs)])
-        return await status_msg.edit(f"**<blockquote>Playlist Audio {len(added_songs)}**\n\n{list_text}</blockquote>")
+        return await status_msg.edit(f"**<blockquote>Playlist Audio {len(added_songs)}**\n\n{list_text}</blockquote>", parse_mode='html')
 
     if replied and (replied.audio or replied.voice or replied.video or replied.document):
         path = await replied.download_media()
@@ -333,7 +333,7 @@ async def vc_vplay(event):
                     await asyncio.sleep(2)
                     await join_call(chat_id, ytlink, True)
                     asyncio.create_task(cleanup_file(ytlink, 1800))
-                    await event.client.send_message(chat_id, f"<blockquote>🎬 **Playing Video:**\n`{_sn}`</blockquote>")
+                    await event.client.send_message(chat_id, f"<blockquote>🎬 **Playing Video:**\n`{_sn}`</blockquote>", parse_mode='html')
 
         for index, v_id in enumerate(ids, start=1):
             url = f"https://www.youtube.com/watch?v={v_id}"
@@ -346,7 +346,7 @@ async def vc_vplay(event):
                     await status_msg.edit(f"📽 **Processing:** {index}/{len(ids)} videos...")
         
         list_text = "\n".join([f"{i+1}. {vid}" for i, vid in enumerate(added_vids)])
-        return await status_msg.edit(f"<blockquote>**Playlist Video {len(added_vids)}**\n\n{list_text}</blockquote>")
+        return await status_msg.edit(f"<blockquote>**Playlist Video {len(added_vids)}**\n\n{list_text}</blockquote>", parse_mode='html')
 
     query = title if title else (replied.message if replied else None)
     search = ytsearch(query)
