@@ -184,7 +184,7 @@ async def vc_play(event):
             await status_msg.edit(f"**ERROR:** `{e}`")
 
 
-@man_cmd(pattern="Vplay( (.*)|$)"))
+@man_cmd(pattern="Vplay( (.*)|$)")
 @AssistantAdd
 async def vc_vplay(event):
     title = event.pattern_match.group(2)
