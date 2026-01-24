@@ -16,8 +16,11 @@ from xteam._misc import SUDO_M, owner_and_sudos
 from xteam.dB.base import KeyManager
 from xteam.fns.helper import inline_mention
 from strings import get_string
-from plugins import asst
+from . import asst
 from . import *
+
+
+BOT_USERNAME = asst.username
 
 Owner_info_msg = udB.get_key("BOT_INFO_START")
 custom_info = True
@@ -51,7 +54,7 @@ _settings = [
 
 _start = [
     [
-        Button.url("✨ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✨", url="https://t.me/{asst.me.username}?startgroup=true"),
+        Button.url("✨ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✨", url="https://t.me/{BOT_USERNAME}?startgroup=true"),
     ],
     [
         Button.inline("⚙️ Settings ⚙️", data="setter"),
