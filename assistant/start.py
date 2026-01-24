@@ -51,7 +51,7 @@ _settings = [
 
 _start = [
     [
-        Button.url("✨ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✨", url="https://t.me/{BOT_USERNAME}?startgroup=true"),
+        Button.url("✨ ᴀᴅᴅ ᴍᴇ ᴛᴏ ʏᴏᴜʀ ɢʀᴏᴜᴘ ✨", url="https://t.me/{asst.me.username}?startgroup=true"),
     ],
     [
         Button.inline("⚙️ Settings ⚙️", data="setter"),
