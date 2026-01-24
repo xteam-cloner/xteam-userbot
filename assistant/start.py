@@ -16,7 +16,7 @@ from xteam._misc import SUDO_M, owner_and_sudos
 from xteam.dB.base import KeyManager
 from xteam.fns.helper import inline_mention
 from strings import get_string
-
+from plugins import *
 from . import *
 
 Owner_info_msg = udB.get_key("BOT_INFO_START")
@@ -55,7 +55,7 @@ _start = [
     ],
     [
         Button.inline("⚙️ Settings ⚙️", data="setter"),
-        Button.inline("♻️️ Restart ♻️️", data="restart"),
+        Button.inline("Module", data="uh_Official_"),
     ],
     [
         Button.inline("👥 Multi Client", data="cbs_m_client"), # Tombol menuju menu Multi-Client
