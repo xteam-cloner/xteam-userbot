@@ -7,7 +7,7 @@
 
 from telethon import Button, custom
 
-from plugins import ATRA_COL, InlinePlugin
+from plugins import ATRA_COL, InlinePlugin, BOT_USERNAME
 from xteam import *
 from xteam import _ult_cache
 from xteam._misc import owner_and_sudos
