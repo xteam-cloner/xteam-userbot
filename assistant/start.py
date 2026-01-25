@@ -20,7 +20,7 @@ from . import asst
 from . import *
 
 
-BOT_USERNAME = asst.username
+BOT_USERNAME = asst.me.username
 
 Owner_info_msg = udB.get_key("BOT_INFO_START")
 custom_info = True
