@@ -77,3 +77,48 @@ async def fwd_dl(e):
         LOGS.exception(ex)
         await ghomst.edit(f"**Error:** `{ex}`")
             
+
+REGEXA = r"(?:(?:https|tg):\/\/)?(?:www\.)?(?:t\.me\/|openmessage\?)(?:(?:c\/(\d+))|(\w+)|(?:user_id\=(\d+)))(?:\/|(\d+))"
+
+@ultroid_cmd(
+    pattern="bulk(?: |$)((?:.|\n)*)",
+)
+async def bulk_fwd(e):
+    ghomst = await e.eor("`Initializing bulk download...`")
+    args = e.pattern_match.group(1)
+    
+    if not args:
+        return await eod(ghomst, "Berikan link pesan awal dari grup tersebut.", time=10)
+
+    match = re.search(REGEXA, args)
+    if not match:
+        return await ghomst.edit("`Link tidak valid!`")
+
+    try:
+        chat_part, user_part, u_id_part, msg_id_part = match.groups()
+        channel = int(chat_part) if chat_part and chat_part.isdigit() else (user_part or int(u_id_part))
+        start_msg_id = int(msg_id_part)
+    except Exception as ex:
+        return await ghomst.edit(f"`Error parsing link: {ex}`")
+
+    success = 0
+    await ghomst.edit("`Scanning and sending media (no text)...`")
+
+    try:
+        async for msg in e.client.iter_messages(channel, min_id=start_msg_id - 1):
+            if msg.media:
+                try:
+                    await e.client.send_message(e.chat_id, msg.media)
+                    success += 1
+                    await asyncio.sleep(1.0) 
+                except Exception as err:
+                    LOGS.error(f"Gagal mengirim pesan {msg.id}: {err}")
+                    if "FloodWait" in str(err):
+                        wait_time = int(re.findall(r'\d+', str(err))[0])
+                        await asyncio.sleep(wait_time + 5)
+            
+    except Exception as ex:
+        return await ghomst.edit(f"**Stop Error:** `{ex}`")
+
+    await ghomst.edit(f"**Selesai!** Berhasil mengirim `{success}` media tanpa teks.")
+            
