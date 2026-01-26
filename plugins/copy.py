@@ -7,8 +7,7 @@ from telethon.errors.rpcerrorlist import MessageNotModifiedError
 from . import LOGS, time_formatter, downloader, random_string, ultroid_cmd, eod
 from . import *
 
-REGEXA = r"^(?:(?:https|tg):\/\/)?(?:www\.)?(?:t\.me\/|openmessage\?)(?:(?:c\/(\d+))|(\w+)|(?:user_id\=(\d+)))(?:\/|&message_id\=)(\d+)(?:\?single)?$"
-DL_DIR = "resources/downloads"
+
 
 def rnd_filename(path):
     if not os.path.exists(path):
