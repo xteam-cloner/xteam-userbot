@@ -1,123 +1,57 @@
-import os
-import re
-import time
 import asyncio
-from datetime import datetime as dt
-from telethon.errors.rpcerrorlist import MessageNotModifiedError
-from . import LOGS, time_formatter, downloader, random_string, ultroid_cmd, eod
+import re
+from . import LOGS, ultroid_cmd, eod
 from . import *
 
-
-
-def rnd_filename(path):
-    if not os.path.exists(path):
-        return path
-    name, ext = os.path.splitext(path)
-    return f"{name}_{int(time.time())}{ext}"
+# Regex khusus untuk menangkap ID Channel Private dan ID Pesan
+REGEXA = r"t\.me\/c\/(\d+)\/(\d+)"
 
 @ultroid_cmd(
     pattern="cmedia(?: |$)((?:.|\n)*)",
 )
-async def fwd_dl(e):
-    ghomst = await e.eor("`checking...`")
+async def bulk_fwd(e):
+    ghomst = await e.eor("`Processing private channel link...`")
     args = e.pattern_match.group(1)
+    
     if not args:
         reply = await e.get_reply_message()
         if reply and reply.text:
-            args = reply.message
+            args = reply.text
         else:
-            return await eod(ghomst, "Give a tg link to download", time=10)
-    
-    remgx = re.findall(REGEXA, args)
-    if not remgx:
-        return await ghomst.edit("`Link tidak valid!`")
-
-    try:
-        chat, id = [i for i in remgx[0] if i]
-        channel = int(chat) if chat.isdigit() else chat
-        msg_id = int(id)
-    except Exception:
-        return await ghomst.edit("`Gagal memproses link.`")
-
-    try:
-        msg = await e.client.get_messages(channel, ids=msg_id)
-    except Exception as ex:
-        return await ghomst.edit(f"**Error:** `{ex}`")
-
-    if not msg or not msg.media:
-        return await ghomst.edit("`Pesan tidak mengandung media.`")
-
-    start_ = dt.now()
-    chat_dir = os.path.join(DL_DIR, str(e.chat_id))
-    os.makedirs(chat_dir, exist_ok=True)
-    
-    try:
-        if hasattr(msg.media, "photo"):
-            dls = await e.client.download_media(msg, chat_dir)
-        elif hasattr(msg.media, "document"):
-            fn = msg.file.name or f"{channel}_{msg_id}{msg.file.ext}"
-            filename = rnd_filename(os.path.join(chat_dir, fn))
-            dlx = await downloader(
-                filename,
-                msg.document,
-                ghomst,
-                time.time(),
-                f"Downloading {filename}...",
-            )
-            dls = dlx.name
-        else:
-            return await ghomst.edit("`Tipe media tidak didukung.`")
-
-        end_ = dt.now()
-        ts = time_formatter(((end_ - start_).seconds) * 1000)
-        await ghomst.edit(f"**Downloaded in {ts} !!**\n » `{dls}`")
-
-    except Exception as ex:
-        LOGS.exception(ex)
-        await ghomst.edit(f"**Error:** `{ex}`")
-            
-
-REGEXA = r"(?:(?:https|tg):\/\/)?(?:www\.)?(?:t\.me\/|openmessage\?)(?:(?:c\/(\d+))|(\w+)|(?:user_id\=(\d+)))(?:\/|(\d+))"
-
-@ultroid_cmd(
-    pattern="bulk(?: |$)((?:.|\n)*)",
-)
-async def bulk_fwd(e):
-    ghomst = await e.eor("`Initializing bulk download...`")
-    args = e.pattern_match.group(1)
-    
-    if not args:
-        return await eod(ghomst, "Berikan link pesan awal dari grup tersebut.", time=10)
+            return await eod(ghomst, "Berikan link pesan awal.", time=10)
 
     match = re.search(REGEXA, args)
     if not match:
-        return await ghomst.edit("`Link tidak valid!`")
+        return await ghomst.edit("`Gunakan format link private: https://t.me/c/3668675664/93`")
 
     try:
-        chat_part, user_part, u_id_part, msg_id_part = match.groups()
-        channel = int(chat_part) if chat_part and chat_part.isdigit() else (user_part or int(u_id_part))
-        start_msg_id = int(msg_id_part)
+        # Untuk link /c/, ID channel harus ditambah -100 di depannya
+        channel_id = int("-100" + match.group(1))
+        start_msg_id = int(match.group(2))
     except Exception as ex:
-        return await ghomst.edit(f"`Error parsing link: {ex}`")
+        return await ghomst.edit(f"`Error parsing ID: {ex}`")
 
     success = 0
-    await ghomst.edit("`Scanning and sending media (no text)...`")
+    await ghomst.edit("`Scanning and sending media only...`")
 
     try:
-        async for msg in e.client.iter_messages(channel, min_id=start_msg_id - 1):
+        # Mengambil pesan dari ID tersebut ke atas
+        async for msg in e.client.iter_messages(channel_id, min_id=start_msg_id - 1, reverse=True):
             if msg.media:
                 try:
-                    await e.client.send_message(e.chat_id, msg.media)
+                    # Mengirim hanya file media tanpa caption/teks
+                    await e.client.send_file(e.chat_id, msg.media)
                     success += 1
-                    await asyncio.sleep(1.0) 
+                    await asyncio.sleep(1.5) # Jeda lebih lama agar tidak terkena Flood
                 except Exception as err:
-                    LOGS.error(f"Gagal mengirim pesan {msg.id}: {err}")
+                    LOGS.error(f"Gagal mengirim {msg.id}: {err}")
                     if "FloodWait" in str(err):
-                        wait_time = int(re.findall(r'\d+', str(err))[0])
-                        await asyncio.sleep(wait_time + 5)
+                        wait_seconds = int(re.findall(r'\d+', str(err))[0])
+                        await asyncio.sleep(wait_seconds + 5)
             
     except Exception as ex:
-        return await ghomst.edit(f"**Stop Error:** `{ex}`")
+        LOGS.exception(ex)
+        return await ghomst.edit(f"**Stop Error:** `{ex}`\nPastikan kamu sudah bergabung di channel tersebut.")
 
     await ghomst.edit(f"**Selesai!** Berhasil mengirim `{success}` media tanpa teks.")
-            
+                        
