@@ -10,7 +10,7 @@ REGEXA = r"t\.me\/c\/(\d+)\/(\d+)"
     pattern="cmedia(?: |$)((?:.|\n)*)",
 )
 async def bulk_fwd(e):
-    ghomst = await e.eor("`Processing protected media...`")
+    ghomst = await e.eor("`Processing media...`")
     args = e.pattern_match.group(1)
     
     if not args:
@@ -31,36 +31,36 @@ async def bulk_fwd(e):
         return await ghomst.edit(f"`Error parsing ID: {ex}`")
 
     success = 0
-    await ghomst.edit("`Downloading to memory & re-uploading...`")
+    await ghomst.edit("`Downloading to memory & fixing filenames...`")
 
     try:
         async for msg in e.client.iter_messages(channel_id, min_id=start_msg_id - 1, reverse=True):
             if msg.media:
                 try:
-                    # Menghindari error proteksi dengan download ke buffer (RAM)
+                    # Tentukan nama file agar tidak 'unnamed'
+                    # Mengambil nama asli jika ada, jika tidak beri nama default dengan ekstensinya
+                    filename = getattr(msg.file, 'name', None) or f"file_{msg.id}{msg.file.ext or ''}"
+                    
                     file_buffer = io.BytesIO()
                     await e.client.download_media(msg.media, file_buffer)
+                    file_buffer.name = filename # Kunci utama agar nama tidak 'unnamed'
                     file_buffer.seek(0)
                     
-                    # Beri nama file sederhana agar Telegram tahu tipenya
-                    filename = getattr(msg.file, 'name', 'file') or "media"
-                    if not "." in filename and msg.file.ext:
-                        filename += msg.file.ext
-
-                    await e.client.send_file(e.chat_id, file_buffer, force_document=False, caption=None)
+                    await e.client.send_file(
+                        e.chat_id, 
+                        file_buffer, 
+                        force_document=True, # Mengirim sebagai file agar nama tetap terjaga
+                        caption=None
+                    )
                     success += 1
-                    
-                    # Jeda agar tidak terkena Limit
                     await asyncio.sleep(2.0) 
                 except Exception as err:
                     LOGS.error(f"Gagal mengirim {msg.id}: {err}")
-                    if "FloodWait" in str(err):
-                        wait_seconds = int(re.findall(r'\d+', str(err))[0])
-                        await asyncio.sleep(wait_seconds + 5)
+                    await asyncio.sleep(1.0)
             
     except Exception as ex:
         LOGS.exception(ex)
         return await ghomst.edit(f"**Stop Error:** `{ex}`")
 
-    await ghomst.edit(f"**Selesai!** Berhasil mengirim `{success}` media terproteksi.")
-                                           
+    await ghomst.edit(f"**Selesai!** Berhasil mengirim `{success}` media dengan nama yang benar.")
+    
