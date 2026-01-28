@@ -15,14 +15,14 @@ from . import LOG_CHANNEL, LOGS, Button, asst, eor, get_string, ultroid_cmd
 
 REPOMSG = """
  <blockquote>✰ xteam-urbot ✰</blockquote>\n
-• Repo - [Click Here](https://github.com/xteam-cloner/xteam-urbot)
+• Repo - [Click Here](https://github.com/xteam-cloner/xteam-userbot)
 • Support - @xteam_cloner
 """
 
 RP_BUTTONS = [
     [
-        Button.url(get_string("bot_3"), "https://github.com/xteam-cloner/Userbot"),
-        Button.url("Addons", "https://github.com/xteam-cloner/Userbot"),
+        Button.url(get_string("bot_3"), "https://github.com/xteam-cloner/xteam-userbot"),
+        Button.url("Addons", "https://github.com/xteam-cloner/xteam-userbot"),
     ],
     [Button.url("Support Group", "t.me/xteam_cloner")],
 ]
