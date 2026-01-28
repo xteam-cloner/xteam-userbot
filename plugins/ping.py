@@ -51,8 +51,6 @@ async def get_ping_message_and_buttons(client):
     display_name = f"OWNER : {owner_html_mention} | UB" 
     
     ping_message = f"""
-<blockquote>
-<b>{bot_header_text}</b></blockquote>
 <blockquote>{emoji_ping_html} Ping : {end}ms
 {emoji_uptime_html} Uptime : {uptime}
 {emoji_owner_html} {display_name}
