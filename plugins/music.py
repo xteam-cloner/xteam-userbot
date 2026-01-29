@@ -389,7 +389,7 @@ async def vc_vplay(event):
             
             msg = await event.client.send_message(
                 chat_id, 
-                f"<blockquote><b>🎬 ɴᴏᴡ ᴘʟᴀʏɪɴɢ ᴠɪᴅᴇᴏ</b>\n{sn}\n\n👤 <b>ʙʏ:</b> {from_user}</blockquote>", 
+                f"<blockquote><b>🎬 ɴᴏᴡ ᴘʟᴀʏɪɴɢ ᴠɪᴅᴇᴏ</b>\n{sn}</blockquote>", 
                 buttons=telegram_markup_timer("00:00", du), 
                 parse_mode='html'
             )
@@ -402,7 +402,7 @@ async def vc_vplay(event):
 
              
 @man_cmd(pattern="(end|stop)$", group_only=True)
-@asst_cmd(pattern="(end|stop)$", group_only=True)
+@asst_cmd(pattern="(end|stop)$")
 async def vc_end(event):
     chat_id = event.chat_id
     try:
@@ -415,7 +415,7 @@ async def vc_end(event):
         await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`", 5)
 
 @man_cmd(pattern="skip$", group_only=True)
-@asst_cmd(pattern="skip$", group_only=True)
+@asst_cmd(pattern="skip$")
 async def vc_skip(event):
     chat_id = event.chat_id
     if chat_id not in QUEUE or len(QUEUE[chat_id]) == 0:
@@ -430,7 +430,7 @@ async def vc_skip(event):
 
 
 @man_cmd(pattern="skip$", group_only=True)
-@asst_cmd(pattern="skip$", group_only=True)
+@asst_cmd(pattern="skip$")
 async def vc_skip(event):
     chat_id = event.chat_id
     op = await skip_current_song(chat_id)
@@ -448,7 +448,7 @@ async def vc_skip(event):
         asyncio.create_task(timer_task(event.client, chat_id, msg.id, op[2]))
 
 @man_cmd(pattern="pause$", group_only=True)
-@asst_cmd(pattern="pause$", group_only=True)
+@asst_cmd(pattern="pause$")
 async def vc_pause(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
@@ -462,7 +462,7 @@ async def vc_pause(event):
 
 
 @man_cmd(pattern="resume$", group_only=True)
-@asst_cmd(pattern="resume$", group_only=True)
+@asst_cmd(pattern="resume$")
 async def vc_resume(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
@@ -506,7 +506,7 @@ async def vc_volume(event):
 
 
 @man_cmd(pattern="playlist$", group_only=True)
-@asst_cmd(pattern="playlist$", group_only=True)
+@asst_cmd(pattern="playlist$")
 async def vc_playlist(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
