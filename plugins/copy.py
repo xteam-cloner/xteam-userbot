@@ -53,7 +53,7 @@ async def bulk_fwd(e):
                         caption=None
                     )
                     success += 1
-                    await asyncio.sleep(2.0) 
+                    await asyncio.sleep(1.5) 
                 except Exception as err:
                     LOGS.error(f"Gagal mengirim {msg.id}: {err}")
                     await asyncio.sleep(1.0)
@@ -116,7 +116,7 @@ async def bulk_fwd(e):
                     )
                     
                     success += 1
-                    await asyncio.sleep(2.0) 
+                    await asyncio.sleep(1.5) 
                 except Exception as err:
                     LOGS.error(f"Gagal mengirim {msg.id}: {err}")
             
