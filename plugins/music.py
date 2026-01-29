@@ -304,7 +304,7 @@ async def vc_play(event):
             
             msg = await event.client.send_message(
                 chat_id, 
-                f"<blockquote><b>🎵 Now Playing</b>\n{songname}\n\n👤 <b>By:</b> {from_user}</blockquote>", 
+                f"<blockquote><b>🎵 Now Playing</b>\n{songname}</blockquote>", 
                 buttons=telegram_markup_timer("00:00", duration), 
                 parse_mode='html'
             )
@@ -363,7 +363,7 @@ async def vc_vplay(event):
         
     sn, url, du, th, vi, ar = search
     
-    await status_msg.edit(f"📥 **ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ:**\n`{sn}`")
+    await status_msg.edit(f"📥 ᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ᴠɪᴅᴇᴏ")
     ok, ytlink = await ytdl(url, True)
     if not ok: 
         return await status_msg.edit(f"**ᴅᴏᴡɴʟᴏᴀᴅ ᴇʀʀᴏʀ:** `{ytlink}`")
@@ -400,9 +400,24 @@ async def vc_vplay(event):
                 os.remove(ytlink)
             await status_msg.edit(f"**ᴇʀʀᴏʀ:** `{e}`")
 
-        
+             
+@man_cmd(pattern="end$", group_only=True)
+@asst_cmd(pattern="end$", group_only=True)
+async def vc_end(event):
+    chat_id = event.chat_id
+    try:
+        await call_py.leave_call(chat_id)
+        clear_queue(chat_id)
+        await edit_or_reply(event, "**Streaming Stop!!**")
+    except Exception as e:
+        await edit_delete(event, f"**ERROR:** `{e}`")
+            if ytlink and os.path.exists(ytlink): 
+                os.remove(ytlink)
+            await status_msg.edit(f"**ᴇʀʀᴏʀ:** `{e}`")
+
 
 @man_cmd(pattern="skip$", group_only=True)
+@asst_cmd(pattern="skip$", group_only=True)
 async def vc_skip(event):
     chat_id = event.chat_id
     op = await skip_current_song(chat_id)
@@ -420,6 +435,7 @@ async def vc_skip(event):
         asyncio.create_task(timer_task(event.client, chat_id, msg.id, op[2]))
 
 @man_cmd(pattern="pause$", group_only=True)
+@asst_cmd(pattern="pause$", group_only=True)
 async def vc_pause(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
@@ -433,6 +449,7 @@ async def vc_pause(event):
 
 
 @man_cmd(pattern="resume$", group_only=True)
+@asst_cmd(pattern="resume$", group_only=True)
 async def vc_resume(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
@@ -476,6 +493,7 @@ async def vc_volume(event):
 
 
 @man_cmd(pattern="playlist$", group_only=True)
+@asst_cmd(pattern="playlist$", group_only=True)
 async def vc_playlist(event):
     chat_id = event.chat_id
     if chat_id in QUEUE:
