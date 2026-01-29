@@ -401,8 +401,8 @@ async def vc_vplay(event):
             await status_msg.edit(f"**ᴇʀʀᴏʀ:** `{e}`")
 
              
-@man_cmd(pattern="end$", group_only=True)
-@asst_cmd(pattern="end$", group_only=True)
+@man_cmd(pattern="(end|stop)$", group_only=True)
+@asst_cmd(pattern="(end|stop)$", group_only=True)
 async def vc_end(event):
     chat_id = event.chat_id
     try:
