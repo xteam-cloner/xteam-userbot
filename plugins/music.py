@@ -408,12 +408,25 @@ async def vc_end(event):
     try:
         await call_py.leave_call(chat_id)
         clear_queue(chat_id)
-        await edit_or_reply(event, "**Streaming Stop!!**")
+        if chat_id in active_messages:
+            del active_messages[chat_id]
+        await edit_or_reply(event, "✅ **sᴛʀᴇᴀᴍɪɴɢ sᴛᴏᴘᴘᴇᴅ!!**")
     except Exception as e:
-        await edit_delete(event, f"**ERROR:** `{e}`")
-            if ytlink and os.path.exists(ytlink): 
-                os.remove(ytlink)
-            await status_msg.edit(f"**ᴇʀʀᴏʀ:** `{e}`")
+        await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`", 5)
+
+@man_cmd(pattern="skip$", group_only=True)
+@asst_cmd(pattern="skip$", group_only=True)
+async def vc_skip(event):
+    chat_id = event.chat_id
+    if chat_id not in QUEUE or len(QUEUE[chat_id]) == 0:
+        return await edit_or_reply(event, "**ǫᴜᴇᴜᴇ ɪs ᴇᴍᴘᴛʏ!**")
+    
+    try:
+        await call_py.leave_call(chat_id)
+        await edit_or_reply(event, "⏭️ **sᴋɪᴘᴘɪɴɢ ᴛᴏ ɴᴇxᴛ sᴏɴɢ...**")
+    except Exception as e:
+        await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`", 5)
+           
 
 
 @man_cmd(pattern="skip$", group_only=True)
