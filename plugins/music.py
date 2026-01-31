@@ -469,48 +469,48 @@ async def playlist(event):
 
 @man_cmd(pattern="(end|stop)$", group_only=True)
 async def vc_end_m(e):
-    await logic_vc_end(e)
+    await vc_end(e)
 
 @asst_cmd(pattern="^(end|stop)")
 async def vc_end_a(e):
     if e.text.startswith('/'):
-        await logic_vc_end(e)
+        await vc_end(e)
 
 @man_cmd(pattern="skip$", group_only=True)
 async def vc_skip_m(e):
-    await logic_skip(e)
+    await skip(e)
 
 @asst_cmd(pattern="^skip")
 async def vc_skip_a(e):
     if e.text.startswith('/'):
-        await logic_skip(e)
+        await skip(e)
 
 @man_cmd(pattern="pause$", group_only=True)
 async def vc_pause_m(e):
-    await logic_pause(e)
+    await pause(e)
 
 @asst_cmd(pattern="^pause")
 async def vc_pause_a(e):
     if e.text.startswith('/'):
-        await logic_pause(e)
+        await pause(e)
 
 @man_cmd(pattern="resume$", group_only=True)
 async def vc_resume_m(e):
-    await logic_resume(e)
+    await resume(e)
 
 @asst_cmd(pattern="^resume")
 async def vc_resume_a(e):
     if e.text.startswith('/'):
-        await logic_resume(e)
+        await resume(e)
 
 @man_cmd(pattern="playlist$", group_only=True)
 async def vc_playlist_m(e):
-    await logic_playlist(e)
+    await playlist(e)
 
 @asst_cmd(pattern="^playlist")
 async def vc_playlist_a(e):
     if e.text.startswith('/'):
-        await logic_playlist(e)
+        await playlist(e)
 
 @man_cmd(pattern=r"volume(?: |$)(.*)", group_only=True)
 async def vc_volume(event):
