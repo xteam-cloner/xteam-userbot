@@ -138,8 +138,8 @@ autopic_4: "AUTOPIC was not in use !!"
 autopic_5: "AUTOPIC Stopped!"
 
 # inline
-inline_1: "**❍ 𝖒𝖆𝖘𝖙𝖊𝖗 𝖔𝖋 : {}.\n\n𝖒𝖔𝖉𝖚𝖑𝖊𝖘 ~ {}**"
-inline_2: "**❍ 𝖒𝖆𝖘𝖙𝖊𝖗 𝖔𝖋 : {}.\n\nAᴅᴅᴏɴs ~ {}**"
+inline_1: "**{}.\n\n𝖒𝖔𝖉𝖚𝖑𝖊𝖘 ~ {}**"
+inline_2: "**{}.\n\nAᴅᴅᴏɴs ~ {}**"
 inline_3: "** {}.\n\nAᴅᴅᴏɴs ~ {}\n\nDᴏ **`.setdb ADDONS True`** ᴀɴᴅ ʀᴇsᴛᴀʀᴛ ᴛᴏ ɢᴇᴛ ᴀᴅᴅᴏɴs.**"
 inline_4: "❍ Prefix : {}\n❍ Total Modules ~ {}\n"
 inline_11: "**❍ Prefix : {}\n\n❍ Total Modules ~ {}\n⁫\n**"
