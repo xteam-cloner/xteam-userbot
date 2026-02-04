@@ -121,16 +121,16 @@ async def skip_current_song(chat_id):
             pass
 
     pop_an_item(chat_id)
-    if len(QUEUE[chat_id]) > 0:
+    
+    if len(QUEUE.get(chat_id, [])) > 0:
         next_song = QUEUE[chat_id][0]
         songname, url, duration, thumb_url, videoid, artist, requester, is_video = next_song
         
         try:
             stream_link_info = await ytdl(url, video_mode=is_video) 
-            hm, ytlink = stream_link_info if isinstance(stream_link_info, tuple) else (1, stream_link_info)
+            ytlink = stream_link_info[1] if isinstance(stream_link_info, tuple) else stream_link_info
             
             await join_call(chat_id, link=ytlink, video=is_video)
-            
             return next_song
         except Exception:
             return await skip_current_song(chat_id)
@@ -420,11 +420,12 @@ async def skip(event):
     elif op == 1:
         await edit_delete(event, "**Antrean habis.**")
     else:
-        thumb = await gen_thumb(op[4])
         cap = get_play_text(op[0], op[5], op[2], op[6])
-        msg = await event.client.send_file(
-            chat_id, caption=f"**⏭ Skip Berhasil**\n{cap}", 
-            buttons=telegram_markup_timer("00:00", op[2])
+        msg = await event.client.send_message(
+            chat_id, 
+            message=f"**⏭ Skip Berhasil**\n{cap}", 
+            buttons=telegram_markup_timer("00:00", op[2]), 
+            parse_mode='html'
         )
         active_messages[chat_id] = msg.id
         asyncio.create_task(timer_task(event.client, chat_id, msg.id, op[2]))
@@ -543,8 +544,12 @@ async def vc_volume(event):
 
 
 @call_py.on_update()
-async def unified_update_handler(client, update: Update):
+async def unified_update_handler(client, update):
     chat_id = getattr(update, "chat_id", None)
+    if not chat_id:
+        return
+
+    from pytgcalls.types import StreamEnded 
     if isinstance(update, StreamEnded):
         if chat_id in active_messages:
             try:
@@ -555,18 +560,19 @@ async def unified_update_handler(client, update: Update):
         if chat_id in QUEUE and len(QUEUE[chat_id]) > 1:
             data = await skip_current_song(chat_id)
             if data and data != 1:
-                songname, url, duration, thumb_url, videoid, artist, requester = data
-                thumb = await gen_thumb(videoid)
-                caption = f"<blockquote><b>Now Playing</b>\n{songname}</blockquote>"
-                
-                # Kirim pesan dengan tombol timer
-                msg = await event.client.send_file(chat_id, caption=f"{caption}", buttons=telegram_markup_timer("00:00", duration), parse_mode='html')
+                s_name, _, dur, _, _, _, _, _ = data
+                caption = f"<blockquote><b>Now Playing</b>\n{s_name}</blockquote>"
+                msg = await asst.send_message(
+                    chat_id, 
+                    message=caption, 
+                    buttons=telegram_markup_timer("00:00", dur), 
+                    parse_mode='html'
+                )
                 active_messages[chat_id] = msg.id
-                
-                asyncio.create_task(timer_task(client, chat_id, msg.id, duration))
+                asyncio.create_task(timer_task(asst, chat_id, msg.id, dur))
         else:
             try:
                 await call_py.leave_call(chat_id)
             except: pass
-            clear_queue(chat_id)
-            
+            if chat_id in QUEUE:
+                clear_queue(chat_id)
