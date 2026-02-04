@@ -422,7 +422,7 @@ async def skip(event):
     else:
         thumb = await gen_thumb(op[4])
         cap = get_play_text(op[0], op[5], op[2], op[6])
-        msg = await event.client.send_file(
+        msg = await event.client.send_message(
             chat_id, caption=f"**⏭ Skip Berhasil**\n{cap}", 
             buttons=telegram_markup_timer("00:00", op[2]), parse_mode='html')
         active_messages[chat_id] = msg.id
