@@ -423,8 +423,7 @@ async def skip(event):
         thumb = await gen_thumb(op[4])
         cap = get_play_text(op[0], op[5], op[2], op[6])
         msg = await event.client.send_file(
-            chat_id, thumb, 
-            caption=f"**⏭ Skip Berhasil**\n{cap}", 
+            chat_id, caption=f"**⏭ Skip Berhasil**\n{cap}", 
             buttons=telegram_markup_timer("00:00", op[2])
         )
         active_messages[chat_id] = msg.id
@@ -558,10 +557,10 @@ async def unified_update_handler(client, update: Update):
             if data and data != 1:
                 songname, url, duration, thumb_url, videoid, artist, requester = data
                 thumb = await gen_thumb(videoid)
-                caption = get_play_text(songname, artist, duration, requester)
+                caption = f"<blockquote><b>Now Playing</b>\n{songname}</blockquote>"
                 
                 # Kirim pesan dengan tombol timer
-                msg = await event.client.send_file(chat_id, caption=f"{caption}", buttons=telegram_markup_timer("00:00", duration))
+                msg = await event.client.send_file(chat_id, caption=f"{caption}", buttons=telegram_markup_timer("00:00", duration), parse_mode='html')
                 active_messages[chat_id] = msg.id
                 
                 asyncio.create_task(timer_task(client, chat_id, msg.id, duration))
