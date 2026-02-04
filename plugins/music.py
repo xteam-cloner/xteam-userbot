@@ -410,7 +410,7 @@ async def vc_end(event):
             del active_messages[chat_id]
         await edit_or_reply(event, "✅ **sᴛʀᴇᴀᴍɪɴɢ sᴛᴏᴘᴘᴇᴅ!!**")
     except Exception as e:
-        await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`", 5)
+        await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`")
 
 async def skip(event):
     chat_id = event.chat_id
@@ -523,7 +523,7 @@ async def vc_volume(event):
     
     if not admin and not creator:
         if not await admin_check(event):
-             return await edit_delete(event, f"**Maaf {me.first_name} Bukan Admin 👮**", 30)
+             return await edit_delete(event, f"**Maaf {me.first_name} Bukan Admin 👮**")
 
     if chat_id in QUEUE:
         try:
@@ -537,7 +537,7 @@ async def vc_volume(event):
         except ValueError:
              await edit_delete(event, "**Mohon masukkan angka yang valid untuk volume.**", 10)
         except Exception as e:
-            await edit_delete(event, f"**ERROR:** `{e}`", 30)
+            await edit_delete(event, f"**ERROR:** `{e}`")
     else:
         await edit_delete(event, "**Tidak Sedang Memutar Streaming**")
 
