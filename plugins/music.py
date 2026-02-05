@@ -126,6 +126,8 @@ async def vc_vplay_bot(event):
         except Exception as e:
             clear_queue(chat_id); await status_msg.edit(f"**ERROR:** `{e}`")
 
+
+
 @man_cmd(pattern="play( (.*)|$)")
 @AssistantAdd
 async def vc_play_user(event):
@@ -140,6 +142,7 @@ async def vc_play_user(event):
     songname = f"{ar} - {sn}"
     ok, ytlink = await ytdl(url, False)
     if not ok: return await status_msg.edit(f"**Error:** `{ytlink}`")
+    
     if chat_id in QUEUE and len(QUEUE[chat_id]) > 0:
         add_to_queue(chat_id, songname, url, du, None, None, ar, from_user, False)
         await status_msg.delete()
@@ -147,11 +150,15 @@ async def vc_play_user(event):
     else:
         try:
             add_to_queue(chat_id, songname, url, du, None, None, ar, from_user, False)
-            await join_call(chat_id, ytlink, False)
-            await status_msg.delete()
-            msg = await event.client.send_message(chat_id, f"<blockquote><b>🎵 Now Playing</b>\n{songname}</blockquote>", buttons=telegram_markup_timer("00:00", du), parse_mode='html')
-            active_messages[chat_id] = msg.id
-            asyncio.create_task(timer_task(event.client, chat_id, msg.id, du))
+            success = await join_call(chat_id, ytlink, False)
+            
+            if success:
+                await status_msg.delete()
+                msg = await event.client.send_message(chat_id, f"<blockquote><b>🎵 Now Playing</b>\n{songname}</blockquote>", buttons=telegram_markup_timer("00:00", du), parse_mode='html')
+                active_messages[chat_id] = msg.id
+                asyncio.create_task(timer_task(event.client, chat_id, msg.id, du))
+                await play_logs(event, songname, du, "Audio")
+                
         except Exception as e: await status_msg.edit(f"**Error:** `{e}`")
 
 @man_cmd(pattern="vplay( (.*)|$)")
@@ -167,6 +174,7 @@ async def vc_vplay_user(event):
     sn, url, du, th, vi, ar = search
     ok, ytlink = await ytdl(url, True)
     if not ok: return await status_msg.edit(f"**Error:** `{ytlink}`")
+    
     if chat_id in QUEUE and len(QUEUE[chat_id]) > 0:
         add_to_queue(chat_id, sn, url, du, None, None, ar, from_user, True)
         await status_msg.delete()
@@ -174,21 +182,17 @@ async def vc_vplay_user(event):
     else:
         try:
             add_to_queue(chat_id, sn, url, du, None, None, ar, from_user, True)
-            await join_call(chat_id, ytlink, True)
-            await status_msg.delete()
-            msg = await event.client.send_message(chat_id, f"<blockquote><b>🎬 Now Streaming Video</b>\n{sn}</blockquote>", buttons=telegram_markup_timer("00:00", du), parse_mode='html')
-            active_messages[chat_id] = msg.id
-            asyncio.create_task(timer_task(event.client, chat_id, msg.id, du))
+            success = await join_call(chat_id, ytlink, True)
+            
+            if success:
+                await status_msg.delete()
+                msg = await event.client.send_message(chat_id, f"<blockquote><b>🎬 Now Streaming Video</b>\n{sn}</blockquote>", buttons=telegram_markup_timer("00:00", du), parse_mode='html')
+                active_messages[chat_id] = msg.id
+                asyncio.create_task(timer_task(event.client, chat_id, msg.id, du))
+                await play_logs(event, sn, du, "Video")
+                
         except Exception as e: await status_msg.edit(f"**Error:** `{e}`")
-
-async def vc_end(event):
-    chat_id = event.chat_id
-    try:
-        await call_py.leave_call(chat_id)
-        clear_queue(chat_id)
-        if chat_id in active_messages: del active_messages[chat_id]
-        await edit_or_reply(event, "✅ **Streaming Stopped!**")
-    except Exception as e: await edit_delete(event, f"**Error:** `{e}`")
+    
 
 async def skip(event):
     chat_id = event.chat_id
@@ -197,7 +201,7 @@ async def skip(event):
     elif op == 1: await edit_delete(event, "**Antrean habis.**")
     else:
         cap = get_play_text(op[0], op[5], op[2], op[6])
-        msg = await event.client.send_message(chat_id, message=f"**⏭ Skip Berhasil**\n{cap}", buttons=telegram_markup_timer("00:00", op[2]), parse_mode='html')
+        msg = await event.client.send_message(chat_id, message=f"<blockquote>Playing now!\n{cap}</blockquote>", buttons=telegram_markup_timer("00:00", op[2]), parse_mode='html')
         active_messages[chat_id] = msg.id
         asyncio.create_task(timer_task(event.client, chat_id, msg.id, op[2]))
 
