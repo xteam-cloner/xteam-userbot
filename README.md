@@ -43,10 +43,10 @@ virtualenv -p /usr/bin/python3 venv
 ```
 ✨ Install the requirements:
 ```console
-chmod +x install.sh
+chmod +x installer.sh
 ```
 ```console
-./install.sh
+./installer.sh
 ```
 
 ✨ Fill your 
