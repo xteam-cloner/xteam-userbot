@@ -37,7 +37,9 @@ cd xteam-userbot
 ✨ Create a virtual env:
 ```console
 virtualenv -p /usr/bin/python3 venv 
- . ./venv/bin/activate
+ ```
+```console
+. ./venv/bin/activate
 ```
 ✨ Install the requirements:
 ```console
