@@ -1,3 +1,4 @@
+
 # Important Requirements here.
 telethon-patch
 telethon==1.42.0
@@ -48,7 +49,7 @@ tabulate
 telegraph
 tgcrypto
 youtube-search-python
-yt-dlp
+yt-dlp[default]
 flask
 flask_restful
 wget
