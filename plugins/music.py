@@ -3,6 +3,7 @@ import asyncio
 import os
 import logging
 from telethon import events, Button
+from . import *
 from xteam.configs import Var 
 from xteam import call_py, asst
 from pytgcalls.types import Update, StreamEnded
