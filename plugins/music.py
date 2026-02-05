@@ -20,7 +20,8 @@ from xteam.vcbot import (
     join_call,
     AssistantAdd,
     cleanup_file,
-    get_playlist_ids
+    get_playlist_ids,
+play_logs
 )
 from xteam.vcbot.queues import QUEUE, add_to_queue, clear_queue, get_queue, pop_an_item
 
