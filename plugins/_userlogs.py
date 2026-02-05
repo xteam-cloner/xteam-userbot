@@ -5,6 +5,7 @@
 # PLease read the GNU Affero General Public License in
 # <https://www.github.com/TeamUltroid/Ultroid/blob/main/LICENSE/>.
 
+
 import os
 import re
 
@@ -161,7 +162,7 @@ if udB.get_key("TAG_LOG"):
             msg = True
             d_.update({"count": 1})
         if d_["count"] > 10:
-            return  # some limit to take edits
+            return
         try:
             MSG = await asst.get_messages(udB.get_key("TAG_LOG"), ids=d_["id"])
         except Exception as er:
@@ -199,9 +200,6 @@ if udB.get_key("TAG_LOG"):
                 await ultroid_bot.send_message(chat, e.message, reply_to=msg)
             except BaseException as er:
                 LOGS.exception(er)
-
-
-# log for assistant/user joins/add
 
 
 async def when_added_or_joined(event):
@@ -275,18 +273,14 @@ async def parse_buttons(event):
     where_n, who_n = get_display_name(y), get_display_name(x)
     where_l = event.message_link
     buttons = [[Button.url(where_n, where_l)]]
+    
     if isinstance(x, User) and x.username:
-        try:
-            buttons.append(
-                [Button.mention(who_n, await asst.get_input_entity(x.username))]
-            )
-        except Exception as er:
-            LOGS.exception(er)
-            buttons.append([Button.url(who_n, f"t.me/{x.username}")])
-    elif getattr(x, "username"):
-        buttons.append([Button.url(who_n, f"t.me/{x.username}")])
+        buttons.append([Button.url(who_n, f"https://t.me/{x.username}")])
+    elif getattr(x, "username", None):
+        buttons.append([Button.url(who_n, f"https://t.me/{x.username}")])
     else:
         buttons.append([Button.url(who_n, where_l)])
+        
     replied = await event.get_reply_message()
     if replied and replied.out:
         button = Button.url("Replied to", replied.message_link)
@@ -295,3 +289,4 @@ async def parse_buttons(event):
         else:
             buttons[-1].append(button)
     return buttons
+    
