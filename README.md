@@ -41,7 +41,10 @@ virtualenv -p /usr/bin/python3 venv
 ```
 ✨ Install the requirements:
 ```console
-pip3 install --no-cache-dir  -r requirements.txt
+chmod +x install.sh
+```
+```console
+./install.sh
 ```
 
 ✨ Fill your 
