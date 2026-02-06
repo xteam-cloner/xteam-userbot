@@ -7,25 +7,25 @@
 """
 ✘ Commands Available -
 
-• `{i}play <song name>`
+• `play <song name>`
    Play the song in voice chat, or add the song to queue.
 
-• `{i}vplay <video name>`
+• `vplay <video name>`
    Play the video in voice chat, or add the song to queue.
 
-1• `{i}paus`
+• `paus`
    Pause stream
      
-• `{i}volume <number>`
+• `volume <number>`
    Put number between 1 to 100
 
-• `{i}skip`
+• `skip`
    Skip the current song and play the next in queue, if any.
 
-• `{i}playlist`
+• `playlist`
    List the songs in queue.
    
-• `{i}end / stop`
+• `end / stop`
    Stop Stream 
 
 """
