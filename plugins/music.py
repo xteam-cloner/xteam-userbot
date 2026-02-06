@@ -227,14 +227,25 @@ async def playlist(event):
         await edit_or_reply(event, text)
     else: await edit_delete(event, "**Tidak ada streaming aktif.**")
 
+async def end(event):
+    chat_id = event.chat_id
+    try:
+        await call_py.leave_call(chat_id)
+        clear_queue(chat_id)
+        if chat_id in active_messages:
+            del active_messages[chat_id]
+        await edit_or_reply(event, "✅ **sᴛʀᴇᴀᴍɪɴɢ sᴛᴏᴘᴘᴇᴅ!!**")
+    except Exception as e:
+        await edit_delete(event, f"**ᴇʀʀᴏʀ:** `{e}`", 5)
+
 @man_cmd(pattern="(end|stop)$", group_only=True)
 async def vc_end(e):
-    await vc_end(e)
+    await end(e)
 
 @asst_cmd(pattern="^(end|stop)")
 async def vc_end(e):
     if e.text.startswith('/'):
-        await vc_end(e)
+        await end(e)
 
 @man_cmd(pattern="skip$", group_only=True)
 async def vc_skip(e):
