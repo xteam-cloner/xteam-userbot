@@ -1,3 +1,35 @@
+# xteam-userbot
+# Copyright (C) 2024-2026 xteam_cloner
+# This file is a part of < https://github.com/xteam-cloner/xteam-userbot/ >
+# PLease read the GNU Affero General Public License in
+# <https://www.github.com/xteam-cloner/xteam-userbot/blob/main/LICENSE/>.
+
+"""
+✘ Commands Available -
+
+• `{i}play <song name>`
+   Play the song in voice chat, or add the song to queue.
+
+• `{i}vplay <video name>`
+   Play the video in voice chat, or add the song to queue.
+
+1• `{i}paus`
+   Pause stream
+     
+• `{i}volume <number>`
+   Put number between 1 to 100
+
+• `{i}skip`
+   Skip the current song and play the next in queue, if any.
+
+• `{i}playlist`
+   List the songs in queue.
+   
+• `{i}end / stop`
+   Stop Stream 
+
+"""
+
 from __future__ import annotations
 import asyncio
 import os
