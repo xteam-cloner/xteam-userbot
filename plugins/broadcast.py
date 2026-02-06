@@ -104,18 +104,33 @@ async def broadcast_remover(event):
 async def list_all(event):
     x = await event.eor(get_string("com_1"))
     channels = KeyM.get()
-    num = KeyM.count()
+    
     if not channels:
         return await eor(x, "No chats were added.", time=5)
+
     msg = "Channels in database:\n"
+    valid_channels_count = 0
+
     for channel in channels:
+        # Validasi: Lewati jika data channel kosong atau None
+        if not channel:
+            continue
+            
         name = ""
         try:
-            name = get_display_name(await event.client.get_entity(channel))
-        except ValueError:
-            name = ""
+            # Mengambil data entity (grup/channel)
+            entity = await event.client.get_entity(channel)
+            name = get_display_name(entity)
+            valid_channels_count += 1
+        except Exception:
+            # Jika ID tidak valid atau bot sudah keluar dari grup tersebut
+            name = "Unknown/Deleted"
+            valid_channels_count += 1
+            
         msg += f"=> **{name}** [`{channel}`]\n"
-    msg += f"\nTotal {num} channels."
+
+    msg += f"\nTotal {valid_channels_count} channels."
+
     if len(msg) > 4096:
         MSG = msg.replace("*", "").replace("`", "")
         with io.BytesIO(str.encode(MSG)) as out_file:
@@ -129,6 +144,7 @@ async def list_all(event):
             await x.delete()
     else:
         await x.edit(msg)
+        
 
 
 @ultroid_cmd(
