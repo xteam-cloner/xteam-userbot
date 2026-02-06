@@ -228,39 +228,49 @@ async def playlist(event):
     else: await edit_delete(event, "**Tidak ada streaming aktif.**")
 
 @man_cmd(pattern="(end|stop)$", group_only=True)
-async def vc_end_m(e): await vc_end(e)
+async def vc_end(e):
+    await vc_end(e)
 
 @asst_cmd(pattern="^(end|stop)")
-async def vc_end_a(e):
-    if e.text.startswith('/'): await vc_end(e)
+async def vc_end(e):
+    if e.text.startswith('/'):
+        await vc_end(e)
 
 @man_cmd(pattern="skip$", group_only=True)
-async def vc_skip_m(e): await skip(e)
+async def vc_skip(e):
+    await skip(e)
 
 @asst_cmd(pattern="^skip")
-async def vc_skip_a(e):
-    if e.text.startswith('/'): await skip(e)
+async def vc_skip(e):
+    if e.text.startswith('/'):
+        await skip(e)
 
 @man_cmd(pattern="pause$", group_only=True)
-async def vc_pause_m(e): await pause(e)
+async def vc_pause(e):
+    await pause(e)
 
 @asst_cmd(pattern="^pause")
-async def vc_pause_a(e):
-    if e.text.startswith('/'): await pause(e)
+async def vc_pause(e):
+    if e.text.startswith('/'):
+        await pause(e)
 
 @man_cmd(pattern="resume$", group_only=True)
-async def vc_resume_m(e): await resume(e)
+async def vc_resume(e):
+    await resume(e)
 
 @asst_cmd(pattern="^resume")
-async def vc_resume_a(e):
-    if e.text.startswith('/'): await resume(e)
+async def vc_resume(e):
+    if e.text.startswith('/'):
+        await resume(e)
 
 @man_cmd(pattern="playlist$", group_only=True)
-async def vc_playlist_m(e): await playlist(e)
+async def vc_playlist(e):
+    await playlist(e)
 
 @asst_cmd(pattern="^playlist")
-async def vc_playlist_a(e):
-    if e.text.startswith('/'): await playlist(e)
+async def vc_playlist(e):
+    if e.text.startswith('/'):
+        await playlist(e)
 
 @man_cmd(pattern=r"volume(?: |$)(.*)", group_only=True)
 async def vc_volume(event):
