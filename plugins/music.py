@@ -197,13 +197,39 @@ async def vc_vplay_user(event):
 async def skip(event):
     chat_id = event.chat_id
     op = await skip_current_song(chat_id)
-    if op == 0: await edit_delete(event, "**Tidak ada streaming aktif.**")
-    elif op == 1: await edit_delete(event, "**Antrean habis.**")
-    else:
-        cap = get_play_text(op[0], op[5], op[2], op[6])
-        msg = await event.client.send_message(chat_id, message=f"<blockquote>Playing now!\n{cap}</blockquote>", buttons=telegram_markup_timer("00:00", op[2]), parse_mode='html')
+    
+    if op == 0: 
+        return await edit_delete(event, "<blockquote>No active streams.</blockquote>", parse_mode='html')
+    
+    if op == 1: 
+        return await edit_delete(event, "<blockquote>The queue is finished.</blockquote>", parse_mode='html')
+    
+    try:
+        title = op[0]
+        artist = op[6]
+        duration = op[2]
+        songname = f"{artist} - {title}" if artist else title
+
+        text = (
+            "<blockquote>"
+            "🎵 Now Playing\n"
+            f"{songname}"
+            "</blockquote>"
+        )
+
+        msg = await event.client.send_message(
+            chat_id, 
+            message=text, 
+            buttons=telegram_markup_timer("00:00", duration), 
+            parse_mode='html'
+        )
+        
         active_messages[chat_id] = msg.id
-        asyncio.create_task(timer_task(event.client, chat_id, msg.id, op[2]))
+        asyncio.create_task(timer_task(event.client, chat_id, msg.id, duration))
+
+    except Exception as e:
+        await event.respond(f"Error: <code>{e}</code>", parse_mode='html')
+    
 
 async def pause(event):
     chat_id = event.chat_id
