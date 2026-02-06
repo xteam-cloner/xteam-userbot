@@ -5,6 +5,7 @@ from telethon import Button
 from platform import python_version as pyver
 from pyrogram import __version__ as pver
 from telethon import __version__ as tver
+from pytgcalls import __version__ as pyt
 from random import choice
 from telethon.utils import resolve_bot_file_id
 from xteam.fns.helper import time_formatter 
@@ -47,11 +48,10 @@ def format_message_text(uptime, branch_info=None):
         branch_display = branch_html
         
     msg = f"""
-{bot_header_text}
 _______________________________
 ‣ Uptime: {uptime}
 ‣ Telethon: {tver}
-‣ Kurigram: {pver}
+‣ PyTgCalls: {pyt}
 ‣ Python: {pyver()}
 ‣ Branch: {branch_display}
 ‣ Owner: <a href='tg://user?id={OWNER_ID}'>{OWNER_NAME}</a>
@@ -141,7 +141,7 @@ async def inline_alive_owner(ult):
                     await builder.document(
                         pic,
                         title="Inline Alive",
-                        description="@TeamUltroid",
+                        description="xteambot",
                         parse_mode="html",
                         buttons=ALIVE_BUTTONS,
                         text=als
