@@ -300,15 +300,11 @@ async def _(event):
 
     xx = await event.eor(get_string("com_1"))
     reply_to_id = event.reply_to_msg_id or event.id
-    stdout, stderr = await bash(cmd, run_code=1)
+    stdout, _ = await bash(cmd, run_code=1)
     
-    # Inisialisasi variabel kosong (Input dihapus)
     OUT = ""
-    err, out = "", ""
+    out = ""
 
-    if stderr:
-        err = f"<b> ERROR:</b>\n<blockquote>{stderr}</blockquote>\n"
-        
     if stdout:
         if (carb or udB.get_key("CARBON_ON_BASH")) and (
             event.is_private
@@ -323,9 +319,7 @@ async def _(event):
                 backgroundColor=choice(ATRA_COL),
             )
             if isinstance(li, dict):
-                await xx.edit(
-                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>\nstderr: <code>{stderr}</code>"
-                )
+                await xx.edit(f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>")
                 return
             url = f"https://graph.org{uf(li)[-1]}"
             OUT = f"[\xad]({url})" 
@@ -345,9 +339,7 @@ async def _(event):
                 rayso=True,
             )
             if isinstance(li, dict):
-                await xx.edit(
-                    f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>\nstderr: <code>{stderr}</code>"
-                )
+                await xx.edit(f"Unknown Response from Carbon: <code>{li}</code>\n\nstdout: <code>{stdout}</code>")
                 return
             url = f"https://graph.org{uf(li)[-1]}"
             OUT = f"[\xad]({url})"
@@ -371,14 +363,13 @@ async def _(event):
             
             out = f"<b> OUTPUT:</b>\n<blockquote>{stdout}</blockquote>"
             
-    if not stderr and not stdout:
+    if not stdout:
         out = "<b> OUTPUT:</b>\n<blockquote>Success</blockquote>"
         
-    # Gabungkan hanya error dan output
-    FINAL_TEXT = err + OUT + out
+    FINAL_TEXT = OUT + out
     
     if len(FINAL_TEXT) > 4096:
-        with BytesIO(str.encode(err + out)) as out_file:
+        with BytesIO(str.encode(out)) as out_file:
             out_file.name = "bash.txt"
             await event.client.send_file(
                 event.chat_id,
@@ -390,4 +381,4 @@ async def _(event):
             await xx.delete()
     else:
         await xx.edit(FINAL_TEXT, parse_mode="html", link_preview=not yamlf)
-    
+                
